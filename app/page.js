@@ -1,392 +1,286 @@
 "use client";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
-import SMSInput from "@/components/SMSInput";
-import TransactionList from "@/components/TransactionList";
-import Charts from "@/components/Charts";
-import HealthScore from "@/components/HealthScore";
-import AnomalyLoan from "@/components/AnomalyLoan";
-import WhatsAppReport from "@/components/WhatsAppReport";
+import { useState, useEffect } from "react";
 
-export default function Dashboard() {
+export default function Home() {
   const router = useRouter();
-  const [transactions, setTransactions] = useState([]);
-  const [forecast, setForecast] = useState([]);
-  const [forecastLoading, setForecastLoading] = useState(false);
-  const [activeSection, setActiveSection] = useState("overview");
-  const [showImport, setShowImport] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
-  const totalCredit = transactions.filter((t) => t.type === "credit").reduce((sum, t) => sum + t.amount, 0);
-  const totalDebit  = transactions.filter((t) => t.type === "debit").reduce((sum, t) => sum + t.amount, 0);
-  const netBalance  = totalCredit - totalDebit;
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
-  const handleTransactionsParsed = async (newTransactions) => {
-    const merged = [...transactions, ...newTransactions];
-    setTransactions(merged);
-    setShowImport(false);
-    setForecastLoading(true);
-    try {
-      const res = await fetch("/api/forecast", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ transactions: merged }),
-      });
-      const data = await res.json();
-      if (data.success) setForecast(data.forecast);
-    } catch (e) { console.error(e); }
-    setForecastLoading(false);
-  };
+  const features = [
+    { icon: "🤖", title: "AI SMS Parsing", desc: "Paste any bank SMS — AI instantly extracts every transaction in seconds" },
+    { icon: "📑", title: "Bank Statement Upload", desc: "Upload PDF statements from SBI, HDFC, ICICI, Axis, Union Bank & more" },
+    { icon: "🖼️", title: "Screenshot Reader", desc: "Take a photo of your SMS inbox — AI reads and parses every transaction" },
+    { icon: "📊", title: "Smart Dashboard", desc: "Visual charts showing income, expenses and 15 spending categories" },
+    { icon: "🔮", title: "3-Month Forecast", desc: "AI predicts your future cash flow and gives actionable business tips" },
+    { icon: "🏦", title: "Loan Eligibility", desc: "Know instantly how much business loan you qualify for based on your data" },
+    { icon: "⚠️", title: "Anomaly Detection", desc: "AI flags unusual transactions automatically — never miss suspicious activity" },
+    { icon: "💯", title: "Health Score", desc: "Get a financial health score out of 100 — like CIBIL but for your business" },
+    { icon: "📱", title: "WhatsApp Reports", desc: "Receive your complete financial summary instantly on WhatsApp" },
+  ];
 
-  const handleStartNew = () => {
-    setTransactions([]);
-    setForecast([]);
-    setActiveSection("overview");
-    setShowImport(false);
-  };
+  const stats = [
+    { number: "11", label: "AI Features" },
+    { number: "15+", label: "Spending Categories" },
+    { number: "All", label: "Indian Banks Supported" },
+    { number: "Free", label: "During Beta" },
+  ];
 
-  const hasData = transactions.length > 0;
+  const banks = ["SBI", "HDFC Bank", "ICICI Bank", "Axis Bank", "Union Bank", "Kotak Bank", "PNB", "BOI"];
 
-  const navItems = [
-    { id: "overview",     label: "Overview"     },
-    { id: "insights",     label: "Insights"     },
-    { id: "transactions", label: "Transactions" },
-    { id: "whatsapp",     label: "WhatsApp"     },
+  const steps = [
+    { step: "01", title: "Upload your data", desc: "Paste SMS, upload bank statement PDF, or drop a screenshot" },
+    { step: "02", title: "AI analyzes instantly", desc: "Our AI reads every transaction and categorizes them automatically" },
+    { step: "03", title: "Get insights", desc: "See your health score, forecast, loan eligibility and WhatsApp report" },
   ];
 
   return (
-    <>
-      <style>{`
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        .db-root {
-          min-height: 100vh;
-          background: #f6f8fc;
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        }
-        .db-topnav {
-          position: sticky; top: 0; z-index: 40;
-          background: #fff; border-bottom: 1px solid #e8edf5;
-          padding: 0 32px;
-          display: flex; align-items: center; justify-content: space-between;
-          height: 60px; gap: 12px;
-        }
-        .db-logo { display: flex; align-items: center; gap: 9px; cursor: pointer; flex-shrink: 0; }
-        .db-logo-icon {
-          width: 32px; height: 32px; background: #2563eb;
-          border-radius: 9px; display: flex; align-items: center;
-          justify-content: center; color: #fff; font-size: 15px; font-weight: 800;
-        }
-        .db-logo-text { font-size: 15px; font-weight: 700; color: #111827; }
-        .db-nav-pills {
-          display: flex; gap: 2px;
-          background: #f1f5f9; border-radius: 10px; padding: 3px;
-        }
-        .db-nav-pill {
-          display: flex; align-items: center;
-          padding: 7px 18px; border-radius: 8px;
-          font-size: 13px; font-weight: 600; cursor: pointer;
-          border: none; background: transparent; color: #64748b;
-          transition: all 0.15s;
-        }
-        .db-nav-pill.active { background: #fff; color: #2563eb; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
-        .db-nav-pill:hover:not(.active) { color: #374151; }
-        .db-nav-pill.disabled { opacity: 0.4; pointer-events: none; }
-        .db-topnav-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-        .db-back-btn {
-          font-size: 12px; font-weight: 600; color: #64748b;
-          background: #f1f5f9; border: 1px solid #e2e8f0;
-          padding: 6px 14px; border-radius: 8px; cursor: pointer;
-          display: flex; align-items: center; gap: 5px;
-          transition: all 0.15s;
-        }
-        .db-back-btn:hover { background: #e2e8f0; color: #374151; }
-        .db-new-btn {
-          font-size: 12px; font-weight: 600; color: #2563eb;
-          background: #eff6ff; border: 1px solid #bfdbfe;
-          padding: 6px 14px; border-radius: 8px; cursor: pointer;
-          display: flex; align-items: center; gap: 5px;
-          transition: all 0.15s;
-        }
-        .db-new-btn:hover { background: #dbeafe; }
-        .db-clear-btn {
-          font-size: 12px; font-weight: 600; color: #dc2626;
-          background: #fef2f2; border: 1px solid #fecaca;
-          padding: 6px 14px; border-radius: 8px; cursor: pointer;
-          transition: all 0.15s;
-        }
-        .db-clear-btn:hover { background: #fee2e2; }
-        .db-body { max-width: 1200px; margin: 0 auto; padding: 28px 28px 48px; }
-        .db-page-title { font-size: 26px; font-weight: 800; color: #0f172a; letter-spacing: -0.03em; }
-        .db-page-sub { font-size: 13px; color: #64748b; margin-top: 3px; margin-bottom: 24px; }
-        .db-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
-        .db-stat {
-          background: #fff; border-radius: 16px; padding: 20px 24px;
-          border: 1px solid #e8edf5; position: relative; overflow: hidden;
-        }
-        .db-stat-accent { position: absolute; left: 0; top: 0; bottom: 0; width: 4px; border-radius: 16px 0 0 16px; }
-        .db-stat-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #9ca3af; margin-bottom: 8px; }
-        .db-stat-value { font-size: 28px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
-        .db-stat-sub { font-size: 12px; color: #9ca3af; margin-top: 6px; }
-        .db-stat-badge { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 700; margin-top: 8px; }
-        .db-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
-        .db-card { background: #fff; border-radius: 18px; border: 1px solid #e8edf5; overflow: hidden; margin-bottom: 20px; }
-        .db-card-header {
-          display: flex; align-items: center; justify-content: space-between;
-          padding: 18px 22px 14px; border-bottom: 1px solid #f1f5f9;
-        }
-        .db-card-title-row { display: flex; align-items: center; gap: 9px; }
-        .db-card-icon { width: 32px; height: 32px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
-        .db-card-title { font-size: 14px; font-weight: 700; color: #111827; }
-        .db-card-sub { font-size: 12px; color: #9ca3af; margin-top: 1px; }
-        .db-card-body { padding: 20px 22px; }
-        .db-add-more-btn {
-          font-size: 13px; font-weight: 600; color: #2563eb;
-          background: #eff6ff; border: 1px solid #bfdbfe;
-          padding: 7px 16px; border-radius: 9px; cursor: pointer;
-          display: flex; align-items: center; gap: 6px; transition: all 0.15s;
-        }
-        .db-add-more-btn:hover { background: #dbeafe; }
-        .db-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 48px 24px; text-align: center; }
-        .db-empty-icon { font-size: 40px; margin-bottom: 14px; opacity: 0.4; }
-        .db-empty-title { font-size: 15px; font-weight: 600; color: #374151; margin-bottom: 6px; }
-        .db-empty-sub { font-size: 13px; color: #9ca3af; line-height: 1.6; max-width: 280px; }
-        .db-loading {
-          display: flex; align-items: center; gap: 10px;
-          padding: 14px 18px; border-radius: 12px;
-          background: #eff6ff; border: 1px solid #bfdbfe;
-          color: #2563eb; font-size: 13px; font-weight: 500; margin-bottom: 20px;
-        }
-        .db-spin { width: 16px; height: 16px; border: 2px solid #bfdbfe; border-top-color: #2563eb; border-radius: 50%; animation: dbs 0.7s linear infinite; flex-shrink: 0; }
-        @keyframes dbs { to { transform: rotate(360deg); } }
-        @media (max-width: 768px) {
-          .db-two-col { grid-template-columns: 1fr; }
-          .db-stats { grid-template-columns: 1fr; }
-          .db-nav-pills { display: none; }
-          .db-topnav { padding: 0 16px; }
-          .db-body { padding: 20px 16px 48px; }
-        }
-      `}</style>
-
-      <div className="db-root">
-
-        {/* Top Nav */}
-        <nav className="db-topnav">
-          <div className="db-logo" onClick={() => router.push("/")}>
-            <div className="db-logo-icon">₹</div>
-            <span className="db-logo-text">SME Finance Intelligence</span>
+    <div className="min-h-screen bg-white font-sans">
+      {/* Navbar */}
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-white shadow-sm border-b border-gray-100" : "bg-transparent"}`}>
+        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white text-sm font-bold">₹</div>
+            <span className="font-bold text-gray-900 text-lg">SME Finance Intelligence</span>
           </div>
+          <div className="hidden md:flex items-center gap-8 text-sm text-gray-600">
+            <a href="#features" className="hover:text-blue-600 transition">Features</a>
+            <a href="#how-it-works" className="hover:text-blue-600 transition">How it works</a>
+            <a href="#banks" className="hover:text-blue-600 transition">Supported Banks</a>
+          </div>
+          <button
+            onClick={() => router.push("/dashboard")}
+            className="bg-blue-600 text-white px-5 py-2 rounded-xl text-sm font-medium hover:bg-blue-700 transition"
+          >
+            Try for Free →
+          </button>
+        </div>
+      </nav>
 
-          <div className="db-nav-pills">
-            {navItems.map((item) => (
-              <button
-                key={item.id}
-                className={`db-nav-pill${activeSection === item.id ? " active" : ""}${!hasData && item.id !== "overview" ? " disabled" : ""}`}
-                onClick={() => setActiveSection(item.id)}
-              >
-                {item.label}
-              </button>
+      {/* Hero */}
+      <section className="pt-32 pb-20 px-6 bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 text-xs font-medium px-3 py-1.5 rounded-full mb-6">
+                <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                AI-Powered Financial Intelligence
+              </div>
+              <h1 className="text-5xl font-bold text-gray-900 leading-tight mb-6">
+                Smart Finance for Your
+                <span className="text-blue-600"> Growing Business</span>
+              </h1>
+              <p className="text-lg text-gray-500 mb-8 leading-relaxed">
+                Upload your bank statement or paste SMS messages — get instant AI-powered insights, expense tracking, cash flow forecasts and loan eligibility. Built for Indian SMEs.
+              </p>
+              <div className="flex items-center gap-4 mb-8">
+                <button
+                  onClick={() => router.push("/dashboard")}
+                  className="bg-blue-600 text-white px-8 py-4 rounded-2xl text-base font-semibold hover:bg-blue-700 transition shadow-lg shadow-blue-200"
+                >
+                  Get Started — It's Free →
+                </button>
+              </div>
+              <div className="flex items-center gap-6 text-sm text-gray-500">
+                <span className="flex items-center gap-1.5">✓ No credit card needed</span>
+                <span className="flex items-center gap-1.5">✓ No data stored</span>
+                <span className="flex items-center gap-1.5">✓ Setup in 2 minutes</span>
+              </div>
+            </div>
+
+            {/* Hero Card */}
+            <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-6">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <p className="text-xs text-gray-500 uppercase tracking-wide">Net Balance</p>
+                  <p className="text-3xl font-bold text-gray-900">₹34,300</p>
+                </div>
+                <div className="bg-green-100 text-green-700 text-xs font-medium px-3 py-1.5 rounded-full">
+                  ↑ Healthy
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                <div className="bg-green-50 rounded-2xl p-4">
+                  <p className="text-xs text-gray-500 mb-1">Total Income</p>
+                  <p className="text-xl font-bold text-green-600">₹45,000</p>
+                </div>
+                <div className="bg-red-50 rounded-2xl p-4">
+                  <p className="text-xs text-gray-500 mb-1">Total Expenses</p>
+                  <p className="text-xl font-bold text-red-500">₹10,700</p>
+                </div>
+              </div>
+              <div className="bg-blue-50 rounded-2xl p-4 mb-4">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-xs font-medium text-gray-700">Financial Health Score</p>
+                  <p className="text-xs text-green-600 font-medium">Excellent</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <p className="text-2xl font-bold text-blue-600">85</p>
+                  <div className="flex-1 bg-blue-100 rounded-full h-2">
+                    <div className="bg-blue-600 h-2 rounded-full" style={{width: "85%"}}></div>
+                  </div>
+                  <p className="text-xs text-gray-500">/ 100</p>
+                </div>
+              </div>
+              <div className="bg-orange-50 rounded-2xl p-4">
+                <p className="text-xs font-medium text-gray-700 mb-1">🏦 Loan Eligibility</p>
+                <p className="text-xl font-bold text-orange-600">₹1,35,000</p>
+                <p className="text-xs text-gray-500 mt-1">Based on your transaction history</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats */}
+      <section className="py-12 bg-blue-600">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {stats.map((s, i) => (
+              <div key={i} className="text-center">
+                <p className="text-3xl font-bold text-white">{s.number}</p>
+                <p className="text-blue-200 text-sm mt-1">{s.label}</p>
+              </div>
             ))}
           </div>
+        </div>
+      </section>
 
-          <div className="db-topnav-right">
-            {/* Always show Back button */}
-            <button className="db-back-btn" onClick={() => router.push("/")}>
-              ← Back
-            </button>
-            {/* Show Start New only when data exists */}
-            {hasData && (
-              <>
-                <button className="db-new-btn" onClick={handleStartNew}>
-                  🔄 Start New
-                </button>
-                <button className="db-clear-btn" onClick={handleStartNew}>
-                  Clear All
-                </button>
-              </>
-            )}
+      {/* Banks */}
+      <section id="banks" className="py-12 bg-gray-50">
+        <div className="max-w-6xl mx-auto px-6 text-center">
+          <p className="text-sm text-gray-500 mb-6 uppercase tracking-wide">Works with all major Indian banks</p>
+          <div className="flex flex-wrap justify-center gap-4">
+            {banks.map((bank, i) => (
+              <div key={i} className="bg-white border border-gray-200 rounded-xl px-5 py-2.5 text-sm font-medium text-gray-700">
+                {bank}
+              </div>
+            ))}
           </div>
-        </nav>
+        </div>
+      </section>
 
-        <div className="db-body">
-
-          {/* Page Header */}
-          <h1 className="db-page-title">Financial Dashboard</h1>
-          <p className="db-page-sub">
-            {hasData ? `${transactions.length} transactions loaded` : "Add your bank data below to get started"}
-          </p>
-
-          {/* Stat Cards */}
-          {hasData && (
-            <div className="db-stats">
-              <div className="db-stat">
-                <div className="db-stat-accent" style={{ background: "#22c55e" }} />
-                <div className="db-stat-label">Total Income</div>
-                <div className="db-stat-value" style={{ color: "#16a34a" }}>₹{totalCredit.toLocaleString("en-IN")}</div>
-                <div className="db-stat-sub">Credits across all entries</div>
+      {/* Features */}
+      <section id="features" className="py-20 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Everything your business needs</h2>
+            <p className="text-lg text-gray-500">11 powerful AI features — all free, all in one place</p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            {features.map((f, i) => (
+              <div key={i} className="bg-white border border-gray-100 rounded-2xl p-6 hover:shadow-md hover:border-blue-100 transition">
+                <div className="text-3xl mb-4">{f.icon}</div>
+                <h3 className="font-semibold text-gray-900 mb-2">{f.title}</h3>
+                <p className="text-sm text-gray-500 leading-relaxed">{f.desc}</p>
               </div>
-              <div className="db-stat">
-                <div className="db-stat-accent" style={{ background: "#ef4444" }} />
-                <div className="db-stat-label">Total Expenses</div>
-                <div className="db-stat-value" style={{ color: "#dc2626" }}>₹{totalDebit.toLocaleString("en-IN")}</div>
-                <div className="db-stat-sub">Debits across all entries</div>
-              </div>
-              <div className="db-stat">
-                <div className="db-stat-accent" style={{ background: netBalance >= 0 ? "#2563eb" : "#f97316" }} />
-                <div className="db-stat-label">Net Balance</div>
-                <div className="db-stat-value" style={{ color: netBalance >= 0 ? "#2563eb" : "#ea580c" }}>
-                  ₹{Math.abs(netBalance).toLocaleString("en-IN")}
-                </div>
-                <div className="db-stat-badge" style={{ background: netBalance >= 0 ? "#dbeafe" : "#ffedd5", color: netBalance >= 0 ? "#1d4ed8" : "#c2410c" }}>
-                  {netBalance >= 0 ? "↑ Surplus" : "↓ Deficit"}
-                </div>
-              </div>
-            </div>
-          )}
+            ))}
+          </div>
+        </div>
+      </section>
 
-          {/* Forecast Loading */}
-          {forecastLoading && (
-            <div className="db-loading">
-              <div className="db-spin" />
-              AI is generating your 3-month cash flow forecast…
-            </div>
-          )}
-
-          {/* ── OVERVIEW ── */}
-          {activeSection === "overview" && (
-            <>
-              {/* Import Card */}
-              <div className="db-card">
-                <div className="db-card-header">
-                  <div className="db-card-title-row">
-                    <div className="db-card-icon" style={{ background: "#eff6ff" }}>📥</div>
-                    <div>
-                      <div className="db-card-title">Add Financial Data</div>
-                      <div className="db-card-sub">Upload bank statement, SMS screenshot, or paste SMS</div>
-                    </div>
-                  </div>
-                  {hasData && (
-                    <button className="db-add-more-btn" onClick={() => setShowImport(!showImport)}>
-                      {showImport ? "✕ Close" : "+ Add More Data"}
-                    </button>
-                  )}
+      {/* How it works */}
+      <section id="how-it-works" className="py-20 px-6 bg-gray-50">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Get insights in 3 simple steps</h2>
+            <p className="text-lg text-gray-500">No accountant needed. No training required.</p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-8">
+            {steps.map((s, i) => (
+              <div key={i} className="text-center">
+                <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center text-white text-2xl font-bold mx-auto mb-6">
+                  {s.step}
                 </div>
-                {(!hasData || showImport) && (
-                  <div className="db-card-body">
-                    <SMSInput onTransactionsParsed={handleTransactionsParsed} />
-                  </div>
+                <h3 className="font-semibold text-gray-900 text-lg mb-3">{s.title}</h3>
+                <p className="text-gray-500 text-sm leading-relaxed">{s.desc}</p>
+                {i < steps.length - 1 && (
+                  <div className="hidden md:block absolute top-8 right-0 text-gray-300 text-2xl">→</div>
                 )}
               </div>
-
-              {/* Health Score + Anomaly side by side */}
-              {hasData && (
-                <div className="db-two-col">
-                  <div className="db-card" style={{ marginBottom: 0 }}>
-                    <div className="db-card-header">
-                      <div className="db-card-title-row">
-                        <div className="db-card-icon" style={{ background: "#fef2f2" }}>❤️</div>
-                        <div>
-                          <div className="db-card-title">Financial Health Score</div>
-                          <div className="db-card-sub">AI-powered business health analysis</div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="db-card-body">
-                      <HealthScore transactions={transactions} />
-                    </div>
-                  </div>
-                  <div className="db-card" style={{ marginBottom: 0 }}>
-                    <div className="db-card-header">
-                      <div className="db-card-title-row">
-                        <div className="db-card-icon" style={{ background: "#fff7ed" }}>🚨</div>
-                        <div>
-                          <div className="db-card-title">Anomaly & Loan Eligibility</div>
-                          <div className="db-card-sub">Flagged transactions + loan estimate</div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="db-card-body">
-                      <AnomalyLoan transactions={transactions} />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Empty State */}
-              {!hasData && (
-                <div className="db-card">
-                  <div className="db-empty">
-                    <div className="db-empty-icon">📊</div>
-                    <div className="db-empty-title">Your insights will appear here</div>
-                    <div className="db-empty-sub">
-                      Paste a bank SMS, upload a PDF statement, or share a screenshot above.
-                      Your health score, forecasts, anomalies, and charts will load automatically.
-                    </div>
-                  </div>
-                </div>
-              )}
-            </>
-          )}
-
-          {/* ── INSIGHTS ── */}
-          {activeSection === "insights" && hasData && (
-            <div className="db-card">
-              <div className="db-card-header">
-                <div className="db-card-title-row">
-                  <div className="db-card-icon" style={{ background: "#f0fdf4" }}>📈</div>
-                  <div>
-                    <div className="db-card-title">Income, Expenses & Forecast</div>
-                    <div className="db-card-sub">Visual breakdown of your financial activity</div>
-                  </div>
-                </div>
-              </div>
-              <div className="db-card-body">
-                <Charts transactions={transactions} forecast={forecast} />
-              </div>
-            </div>
-          )}
-
-          {/* ── TRANSACTIONS ── */}
-          {activeSection === "transactions" && hasData && (
-            <div className="db-card">
-              <div className="db-card-header">
-                <div className="db-card-title-row">
-                  <div className="db-card-icon" style={{ background: "#f8fafc" }}>🧾</div>
-                  <div>
-                    <div className="db-card-title">All Transactions</div>
-                    <div className="db-card-sub">Search, filter and review every entry</div>
-                  </div>
-                </div>
-              </div>
-              <div className="db-card-body">
-                <TransactionList transactions={transactions} />
-              </div>
-            </div>
-          )}
-
-          {/* ── WHATSAPP ── */}
-          {activeSection === "whatsapp" && hasData && (
-            <div className="db-card">
-              <div className="db-card-header">
-                <div className="db-card-title-row">
-                  <div className="db-card-icon" style={{ background: "#f0fdf4" }}>📱</div>
-                  <div>
-                    <div className="db-card-title">WhatsApp Instant Report</div>
-                    <div className="db-card-sub">Powered by Twilio · Sends income, expenses, health score & forecast</div>
-                  </div>
-                </div>
-              </div>
-              <div className="db-card-body">
-                <WhatsAppReport transactions={transactions} forecast={forecast} />
-              </div>
-            </div>
-          )}
-
+            ))}
+          </div>
         </div>
+      </section>
 
-        {/* Footer */}
-        <div style={{ textAlign: "center", padding: "0 0 24px", fontSize: 12, color: "#9ca3af" }}>
-          Built for Indian SME owners · Powered by Groq AI · Free during beta
+      {/* Why choose us */}
+      <section className="py-20 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="text-4xl font-bold text-gray-900 mb-8">Built specifically for Indian SMEs</h2>
+              {[
+                { title: "Understands Indian bank SMS formats", desc: "SBI, HDFC, ICICI, Axis, UPI — our AI reads them all perfectly" },
+                { title: "Hindi, Telugu & Tamil support", desc: "Works with vernacular language SMS messages from any Indian bank" },
+                { title: "UPI transaction intelligence", desc: "Automatically categorizes Paytm, PhonePe, GPay transactions" },
+                { title: "Zero data storage", desc: "Your financial data is never stored — complete privacy guaranteed" },
+              ].map((item, i) => (
+                <div key={i} className="flex items-start gap-4 mb-6">
+                  <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">{item.title}</p>
+                    <p className="text-sm text-gray-500 mt-1">{item.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl p-8">
+              <div className="space-y-4">
+                {[
+                  { label: "Time saved monthly", value: "10+ hours", color: "bg-blue-600" },
+                  { label: "Transaction accuracy", value: "95%+", color: "bg-green-500" },
+                  { label: "Banks supported", value: "All Indian", color: "bg-orange-500" },
+                  { label: "Setup time", value: "2 minutes", color: "bg-purple-500" },
+                ].map((item, i) => (
+                  <div key={i} className="bg-white rounded-2xl p-4 flex items-center justify-between">
+                    <p className="text-sm text-gray-600">{item.label}</p>
+                    <span className={`${item.color} text-white text-xs font-medium px-3 py-1 rounded-full`}>
+                      {item.value}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </>
+      </section>
+
+      {/* CTA */}
+      <section className="py-20 px-6 bg-blue-600">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="text-4xl font-bold text-white mb-4">
+            Ready to take control of your finances?
+          </h2>
+          <p className="text-blue-200 text-lg mb-8">
+            Join thousands of Indian SME owners who are making smarter financial decisions with AI.
+          </p>
+          <button
+            onClick={() => router.push("/dashboard")}
+            className="bg-white text-blue-600 px-10 py-4 rounded-2xl text-lg font-bold hover:bg-blue-50 transition shadow-xl"
+          >
+            Get Started — It's Free →
+          </button>
+          <p className="text-blue-300 text-sm mt-4">No credit card required · No data stored · Free during beta</p>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="py-8 px-6 bg-gray-900">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between">
+          <div className="flex items-center gap-2 mb-4 md:mb-0">
+            <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">₹</div>
+            <span className="font-bold text-white">SME Finance Intelligence</span>
+          </div>
+          <p className="text-gray-500 text-sm">Built for Indian SMEs · Powered by AI · Free during beta</p>
+        </div>
+      </footer>
+    </div>
   );
 }
