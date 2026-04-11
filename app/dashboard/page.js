@@ -269,13 +269,11 @@ export default function Dashboard() {
 
         {/* Navbar */}
         <nav className="db-nav">
-          {/* Logo */}
           <div className="db-logo" onClick={() => router.push("/")}>
             <div className="db-logo-box">₹</div>
             <span className="db-logo-text">SME Finance Intelligence</span>
           </div>
 
-          {/* Tab pills */}
           <div className="db-tabs">
             {tabIds.map((id, i) => (
               <button
@@ -286,9 +284,7 @@ export default function Dashboard() {
             ))}
           </div>
 
-          {/* Right: language + back + new */}
           <div className="db-nav-right">
-            {/* Language switcher */}
             <div className="db-lang-wrap">
               <span className="db-lang-lbl">{t.selectLang}:</span>
               {LANG_OPTIONS.map((l) => (
@@ -385,7 +381,10 @@ export default function Dashboard() {
                         </div>
                       </div>
                     </div>
-                    <div className="db-card-body"><HealthScore transactions={transactions} /></div>
+                    {/* ✅ lang prop added */}
+                    <div className="db-card-body">
+                      <HealthScore transactions={transactions} lang={lang} />
+                    </div>
                   </div>
                   <div className="db-card" style={{ marginBottom: 0 }}>
                     <div className="db-card-head">
@@ -397,7 +396,10 @@ export default function Dashboard() {
                         </div>
                       </div>
                     </div>
-                    <div className="db-card-body"><AnomalyLoan transactions={transactions} /></div>
+                    {/* ✅ lang prop added */}
+                    <div className="db-card-body">
+                      <AnomalyLoan transactions={transactions} lang={lang} />
+                    </div>
                   </div>
                 </div>
               )}
@@ -426,7 +428,10 @@ export default function Dashboard() {
                   </div>
                 </div>
               </div>
-              <div className="db-card-body"><Charts transactions={transactions} forecast={forecast} /></div>
+              {/* ✅ lang prop added */}
+              <div className="db-card-body">
+                <Charts transactions={transactions} forecast={forecast} lang={lang} />
+              </div>
             </div>
           )}
 
@@ -442,7 +447,10 @@ export default function Dashboard() {
                   </div>
                 </div>
               </div>
-              <div className="db-card-body"><TransactionList transactions={transactions} /></div>
+              {/* ✅ lang prop added */}
+              <div className="db-card-body">
+                <TransactionList transactions={transactions} lang={lang} />
+              </div>
             </div>
           )}
 
@@ -458,7 +466,10 @@ export default function Dashboard() {
                   </div>
                 </div>
               </div>
-              <div className="db-card-body"><WhatsAppReport transactions={transactions} forecast={forecast} /></div>
+              {/* ✅ lang prop added */}
+              <div className="db-card-body">
+                <WhatsAppReport transactions={transactions} forecast={forecast} lang={lang} />
+              </div>
             </div>
           )}
 
