@@ -7,8 +7,8 @@ import Charts from "@/components/Charts";
 import HealthScore from "@/components/HealthScore";
 import AnomalyLoan from "@/components/AnomalyLoan";
 import WhatsAppReport from "@/components/WhatsAppReport";
+import FinanceChat from "@/components/FinanceChat";
 
-// ── UI TRANSLATIONS ──────────────────────────────────────────────
 const T = {
   en: {
     title:        "Financial Dashboard",
@@ -35,12 +35,14 @@ const T = {
     txSub:        "Search, filter and review every entry",
     waTitle:      "WhatsApp Instant Report",
     waSub:        "Powered by Twilio · Income, expenses & forecast",
+    chatTitle:    "Ask Your AI Financial Advisor",
+    chatSub:      "Ask anything about your transactions, spending and forecast",
     emptyTitle:   "Your insights will appear here",
     emptySub:     "Upload a bank statement PDF, paste SMS, or share a screenshot. Everything loads automatically.",
     forecast:     "AI is generating your 3-month cash flow forecast…",
     back:         "← Back",
     startNew:     "🔄 Start New",
-    tabs:         ["Overview", "Insights", "Transactions", "WhatsApp"],
+    tabs:         ["Overview", "Insights", "Transactions", "WhatsApp", "💬 Ask AI"],
     footer:       "Built for Indian SME owners · Powered by Groq AI · Free during beta",
     selectLang:   "Language",
   },
@@ -69,12 +71,14 @@ const T = {
     txSub:        "खोजें, फ़िल्टर करें और समीक्षा करें",
     waTitle:      "WhatsApp त्वरित रिपोर्ट",
     waSub:        "Twilio द्वारा संचालित · आय, व्यय और पूर्वानुमान",
+    chatTitle:    "AI वित्तीय सलाहकार से पूछें",
+    chatSub:      "अपने लेनदेन, खर्च और पूर्वानुमान के बारे में कुछ भी पूछें",
     emptyTitle:   "आपकी जानकारी यहाँ दिखेगी",
     emptySub:     "बैंक स्टेटमेंट PDF अपलोड करें, SMS पेस्ट करें या स्क्रीनशॉट साझा करें।",
     forecast:     "AI आपका 3 महीने का नकदी प्रवाह पूर्वानुमान तैयार कर रहा है…",
     back:         "← वापस",
     startNew:     "🔄 नया शुरू करें",
-    tabs:         ["अवलोकन", "जानकारी", "लेनदेन", "WhatsApp"],
+    tabs:         ["अवलोकन", "जानकारी", "लेनदेन", "WhatsApp", "💬 AI पूछें"],
     footer:       "भारतीय SME मालिकों के लिए · Groq AI द्वारा संचालित · बीटा में निःशुल्क",
     selectLang:   "भाषा",
   },
@@ -103,12 +107,14 @@ const T = {
     txSub:        "వెతకండి, వడపోయండి మరియు సమీక్షించండి",
     waTitle:      "WhatsApp తక్షణ నివేదిక",
     waSub:        "Twilio ద్వారా · ఆదాయం, ఖర్చులు & అంచనా",
+    chatTitle:    "AI ఆర్థిక సలహాదారుని అడగండి",
+    chatSub:      "మీ లావాదేవీలు, ఖర్చులు మరియు అంచనా గురించి ఏదైనా అడగండి",
     emptyTitle:   "మీ అంతర్దృష్టులు ఇక్కడ కనిపిస్తాయి",
     emptySub:     "బ్యాంక్ స్టేట్‌మెంట్ PDF అప్‌లోడ్ చేయండి, SMS పేస్ట్ చేయండి లేదా స్క్రీన్‌షాట్ షేర్ చేయండి.",
     forecast:     "AI మీ 3-నెలల నగదు ప్రవాహ అంచనాను రూపొందిస్తోంది…",
     back:         "← వెనక్కి",
     startNew:     "🔄 కొత్తగా ప్రారంభించు",
-    tabs:         ["అవలోకనం", "అంతర్దృష్టులు", "లావాదేవీలు", "WhatsApp"],
+    tabs:         ["అవలోకనం", "అంతర్దృష్టులు", "లావాదేవీలు", "WhatsApp", "💬 AI అడగండి"],
     footer:       "భారతీయ SME యజమానుల కోసం · Groq AI ద్వారా · బీటాలో ఉచితం",
     selectLang:   "భాష",
   },
@@ -137,12 +143,14 @@ const T = {
     txSub:        "தேடு, வடிகட்டு மற்றும் மதிப்பாய்வு செய்",
     waTitle:      "WhatsApp உடனடி அறிக்கை",
     waSub:        "Twilio மூலம் · வருமானம், செலவுகள் & முன்கணிப்பு",
+    chatTitle:    "AI நிதி ஆலோசகரிடம் கேளுங்கள்",
+    chatSub:      "உங்கள் பரிவர்த்தனைகள், செலவுகள் மற்றும் முன்கணிப்பு பற்றி எதையும் கேளுங்கள்",
     emptyTitle:   "உங்கள் நுண்ணறிவுகள் இங்கே தோன்றும்",
     emptySub:     "வங்கி அறிக்கை PDF பதிவேற்றவும், SMS ஒட்டவும் அல்லது ஸ்கிரீன்ஷாட் பகிரவும்.",
     forecast:     "AI உங்கள் 3 மாத பணப்புழக்க முன்கணிப்பை உருவாக்குகிறது…",
     back:         "← பின்னால்",
     startNew:     "🔄 புதிதாக தொடங்கு",
-    tabs:         ["மேலோட்டம்", "நுண்ணறிவுகள்", "பரிவர்த்தனைகள்", "WhatsApp"],
+    tabs:         ["மேலோட்டம்", "நுண்ணறிவுகள்", "பரிவர்த்தனைகள்", "WhatsApp", "💬 AI கேள்"],
     footer:       "இந்திய SME உரிமையாளர்களுக்காக · Groq AI மூலம் · பீட்டாவில் இலவசம்",
     selectLang:   "மொழி",
   },
@@ -164,8 +172,8 @@ export default function Dashboard() {
   const [showImport, setShowImport]           = useState(false);
   const [lang, setLang]                       = useState("en");
 
-  const t        = T[lang];
-  const tabIds   = ["overview", "insights", "transactions", "whatsapp"];
+  const t      = T[lang];
+  const tabIds = ["overview", "insights", "transactions", "whatsapp", "chat"];
 
   const totalCredit = transactions.filter((x) => x.type === "credit").reduce((s, x) => s + x.amount, 0);
   const totalDebit  = transactions.filter((x) => x.type === "debit").reduce((s, x) => s + x.amount, 0);
@@ -193,40 +201,38 @@ export default function Dashboard() {
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         .db { min-height: 100vh; background: #f0f4ff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
 
-        /* NAV */
         .db-nav { position: sticky; top: 0; z-index: 50; background: #fff; border-bottom: 1px solid #e5e7eb; height: 60px; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
         .db-logo { display: flex; align-items: center; gap: 8px; cursor: pointer; flex-shrink: 0; }
         .db-logo-box { width: 32px; height: 32px; background: #2563eb; border-radius: 9px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 16px; font-weight: 800; }
         .db-logo-text { font-size: 15px; font-weight: 700; color: #111827; }
 
-        /* Tab pills */
         .db-tabs { display: flex; gap: 2px; background: #f1f5f9; border-radius: 10px; padding: 3px; }
-        .db-tab { padding: 7px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; font-weight: 600; color: #64748b; background: transparent; transition: all 0.15s; }
+        .db-tab { padding: 7px 14px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; font-weight: 600; color: #64748b; background: transparent; transition: all 0.15s; white-space: nowrap; }
         .db-tab.active { background: #fff; color: #2563eb; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
         .db-tab:hover:not(.active) { color: #374151; }
         .db-tab.locked { opacity: 0.35; pointer-events: none; }
 
-        /* Language switcher */
+        /* Highlight Ask AI tab */
+        .db-tab.chat-tab { color: #7c3aed; }
+        .db-tab.chat-tab.active { background: #7c3aed; color: #fff; }
+
         .db-lang-wrap { display: flex; align-items: center; gap: 5px; }
         .db-lang-lbl { font-size: 11px; font-weight: 600; color: #9ca3af; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
         .db-lang-btn { font-size: 12px; font-weight: 700; padding: 5px 10px; border-radius: 8px; border: 1.5px solid #e2e8f0; background: #f8fafc; color: #64748b; cursor: pointer; transition: all 0.15s; }
         .db-lang-btn.active { background: #2563eb; color: #fff; border-color: #2563eb; }
         .db-lang-btn:hover:not(.active) { border-color: #93c5fd; color: #2563eb; background: #eff6ff; }
 
-        /* Nav right */
         .db-nav-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
         .db-btn-back { font-size: 12px; font-weight: 600; color: #64748b; background: #f1f5f9; border: 1px solid #e2e8f0; padding: 6px 12px; border-radius: 8px; cursor: pointer; transition: all 0.15s; }
         .db-btn-back:hover { background: #e2e8f0; }
         .db-btn-new { font-size: 12px; font-weight: 600; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; padding: 6px 12px; border-radius: 8px; cursor: pointer; transition: all 0.15s; }
         .db-btn-new:hover { background: #dbeafe; }
 
-        /* Body */
         .db-body { max-width: 1100px; margin: 0 auto; padding: 26px 22px 56px; }
         .db-ph { margin-bottom: 20px; }
         .db-ph h1 { font-size: 26px; font-weight: 800; color: #0f172a; letter-spacing: -0.03em; }
         .db-ph p  { font-size: 13px; color: #6b7280; margin-top: 3px; }
 
-        /* Stats */
         .db-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 20px; }
         .db-stat  { background: #fff; border-radius: 16px; padding: 18px 20px; border: 1px solid #e8edf5; position: relative; overflow: hidden; }
         .db-stat-bar { position: absolute; left: 0; top: 0; bottom: 0; width: 4px; border-radius: 16px 0 0 16px; }
@@ -235,7 +241,6 @@ export default function Dashboard() {
         .db-stat-sub { font-size: 11px; color: #9ca3af; margin-top: 5px; }
         .db-stat-badge { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 700; margin-top: 7px; }
 
-        /* Cards */
         .db-card { background: #fff; border-radius: 18px; border: 1px solid #e8edf5; overflow: hidden; margin-bottom: 18px; }
         .db-card-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px 12px; border-bottom: 1px solid #f1f5f9; }
         .db-card-title-row { display: flex; align-items: center; gap: 9px; }
@@ -262,6 +267,13 @@ export default function Dashboard() {
           .db-nav { padding: 0 14px; }
           .db-body { padding: 18px 14px 48px; }
           .db-lang-lbl { display: none; }
+          .db-stat-val { font-size: 22px; }
+        }
+        @media (max-width: 480px) {
+          .db-card-head { flex-wrap: wrap; gap: 8px; }
+          .db-add-btn { width: 100%; justify-content: center; }
+          .db-btn-back { display: none; }
+          .db-btn-new { font-size: 11px; padding: 5px 10px; }
         }
       `}</style>
 
@@ -278,9 +290,11 @@ export default function Dashboard() {
             {tabIds.map((id, i) => (
               <button
                 key={id}
-                className={`db-tab${activeTab === id ? " active" : ""}${!hasData && id !== "overview" ? " locked" : ""}`}
+                className={`db-tab${id === "chat" ? " chat-tab" : ""}${activeTab === id ? " active" : ""}${!hasData && id !== "overview" ? " locked" : ""}`}
                 onClick={() => setActiveTab(id)}
-              >{t.tabs[i]}</button>
+              >
+                {t.tabs[i]}
+              </button>
             ))}
           </div>
 
@@ -381,7 +395,6 @@ export default function Dashboard() {
                         </div>
                       </div>
                     </div>
-                    {/* ✅ lang prop added */}
                     <div className="db-card-body">
                       <HealthScore transactions={transactions} lang={lang} />
                     </div>
@@ -396,7 +409,6 @@ export default function Dashboard() {
                         </div>
                       </div>
                     </div>
-                    {/* ✅ lang prop added */}
                     <div className="db-card-body">
                       <AnomalyLoan transactions={transactions} lang={lang} />
                     </div>
@@ -428,7 +440,6 @@ export default function Dashboard() {
                   </div>
                 </div>
               </div>
-              {/* ✅ lang prop added */}
               <div className="db-card-body">
                 <Charts transactions={transactions} forecast={forecast} lang={lang} />
               </div>
@@ -447,7 +458,6 @@ export default function Dashboard() {
                   </div>
                 </div>
               </div>
-              {/* ✅ lang prop added */}
               <div className="db-card-body">
                 <TransactionList transactions={transactions} lang={lang} />
               </div>
@@ -466,9 +476,26 @@ export default function Dashboard() {
                   </div>
                 </div>
               </div>
-              {/* ✅ lang prop added */}
               <div className="db-card-body">
                 <WhatsAppReport transactions={transactions} forecast={forecast} lang={lang} />
+              </div>
+            </div>
+          )}
+
+          {/* ── CHAT ── */}
+          {activeTab === "chat" && hasData && (
+            <div className="db-card">
+              <div className="db-card-head">
+                <div className="db-card-title-row">
+                  <div className="db-card-ico" style={{ background: "#f5f3ff" }}>💬</div>
+                  <div>
+                    <div className="db-card-title">{t.chatTitle}</div>
+                    <div className="db-card-sub">{t.chatSub}</div>
+                  </div>
+                </div>
+              </div>
+              <div className="db-card-body">
+                <FinanceChat transactions={transactions} forecast={forecast} />
               </div>
             </div>
           )}
