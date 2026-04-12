@@ -208,7 +208,7 @@ export default function Dashboard() {
       </div>
 
       {/* ── MAIN CONTENT ── */}
-      <div style={{ maxWidth:1100, margin:"0 auto", padding:"0 24px 80px" }}>
+      <div className="dash-main-content" style={{ maxWidth:1100, margin:"0 auto", padding:"0 24px 80px" }}>
 
         {/* OVERVIEW */}
         {activeTab==="overview" && (
@@ -282,8 +282,8 @@ export default function Dashboard() {
         )}
       </div>
 
-      {/* FOOTER — matches landing page footer exactly */}
-      <footer style={{ background:"#111827", padding:"28px 24px" }}>
+      {/* FOOTER — hidden on mobile (bottom nav takes its place) */}
+      <footer className="dash-footer" style={{ background:"#111827", padding:"28px 24px" }}>
         <div style={{ maxWidth:1100, margin:"0 auto", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:12 }}>
           <div style={{ display:"flex", alignItems:"center", gap:8 }}>
             <div style={{ width:28, height:28, background:"#2563eb", borderRadius:7, display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontSize:12, fontWeight:800 }}>₹</div>
@@ -293,11 +293,94 @@ export default function Dashboard() {
         </div>
       </footer>
 
+      {/* ── MOBILE BOTTOM NAV BAR ── */}
+      {/* Icons for each tab */}
+      <nav className="mobile-bottom-nav">
+        {[
+          { id:"overview",     icon:"🏠", label:"Home"    },
+          { id:"insights",     icon:"📈", label:"Insights" },
+          { id:"transactions", icon:"🧾", label:"Txns"    },
+          { id:"whatsapp",     icon:"📱", label:"WhatsApp" },
+          { id:"chat",         icon:"💬", label:"Ask AI"  },
+        ].map(item => {
+          const isActive = activeTab === item.id;
+          const isLocked = !hasData && item.id !== "overview";
+          return (
+            <button
+              key={item.id}
+              onClick={() => !isLocked && setActiveTab(item.id)}
+              className={`mobile-nav-btn${isActive ? " active" : ""}${isLocked ? " locked" : ""}`}
+            >
+              <span className="mobile-nav-icon">{item.icon}</span>
+              <span className="mobile-nav-label">{item.label}</span>
+            </button>
+          );
+        })}
+      </nav>
+
       <style>{`
         @keyframes spin { to { transform:rotate(360deg); } }
+
+        /* ── Desktop: hide bottom nav ── */
+        .mobile-bottom-nav { display: none; }
+
+        /* ── Mobile ── */
         @media (max-width:768px) {
-          .dash-tabs { display:none !important; }
+          .dash-tabs   { display: none !important; }
+          .dash-footer { display: none !important; }
+
+          /* Bottom nav bar */
+          .mobile-bottom-nav {
+            display: flex;
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            z-index: 100;
+            background: #fff;
+            border-top: 1px solid #e5e7eb;
+            box-shadow: 0 -4px 16px rgba(0,0,0,0.08);
+            padding: 6px 0 env(safe-area-inset-bottom, 6px);
+          }
+          .mobile-nav-btn {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            padding: 6px 4px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.15s;
+            -webkit-tap-highlight-color: transparent;
+          }
+          .mobile-nav-btn.locked {
+            opacity: 0.3;
+            pointer-events: none;
+          }
+          .mobile-nav-icon {
+            font-size: 20px;
+            line-height: 1;
+          }
+          .mobile-nav-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: #9ca3af;
+            letter-spacing: 0.02em;
+          }
+          .mobile-nav-btn.active .mobile-nav-label {
+            color: #2563eb;
+          }
+          .mobile-nav-btn.active .mobile-nav-icon {
+            filter: drop-shadow(0 0 4px rgba(37,99,235,0.4));
+          }
+
+          /* Add bottom padding so content isn't hidden behind bottom nav */
+          .dash-main-content {
+            padding-bottom: 90px !important;
+          }
         }
+
         @media (max-width:640px) {
           .stat-grid { grid-template-columns: 1fr !important; }
           .two-col   { grid-template-columns: 1fr !important; }
