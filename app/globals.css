@@ -12,104 +12,15 @@
   --font-mono: var(--font-geist-mono);
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
-}
-
-/* ── MOBILE FIXES ── */
-
-/* Landing page mobile */
-@media (max-width: 768px) {
-  .grid.md\:grid-cols-2 {
-    grid-template-columns: 1fr !important;
-  }
-  .grid.md\:grid-cols-3 {
-    grid-template-columns: 1fr !important;
-  }
-  .grid.md\:grid-cols-4 {
-    grid-template-columns: 1fr 1fr !important;
-  }
-  .text-5xl {
-    font-size: 2.2rem !important;
-  }
-  .text-4xl {
-    font-size: 1.8rem !important;
-  }
-  .px-8 {
-    padding-left: 1rem !important;
-    padding-right: 1rem !important;
-  }
-  .gap-12 {
-    gap: 2rem !important;
-  }
-  .pt-32 {
-    padding-top: 5rem !important;
-  }
-  nav .hidden.md\:flex {
-    display: none !important;
-  }
-}
-
-/* Dashboard mobile */
-@media (max-width: 768px) {
-  .db-two {
-    grid-template-columns: 1fr !important;
-  }
-  .db-stats {
-    grid-template-columns: 1fr !important;
-  }
-  .db-tabs {
-    display: none !important;
-  }
-  .db-logo-text {
-    display: none !important;
-  }
-  .db-nav {
-    padding: 0 14px !important;
-  }
-  .db-body {
-    padding: 18px 14px 48px !important;
-  }
-  .db-stat-val {
-    font-size: 22px !important;
-  }
-  .db-card-head {
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-}
-
-@media (max-width: 480px) {
-  .db-add-btn {
-    width: 100%;
-    justify-content: center;
-  }
-  .db-btn-back {
-    display: none !important;
-  }
-  .db-btn-new {
-    font-size: 11px !important;
-    padding: 5px 10px !important;
-  }
-  .si-tabs {
-    flex-direction: column !important;
-  }
-  .si-toprow {
-    flex-direction: column !important;
-  }
-}
-
-/* Prevent dark mode from breaking dashboard */
-@media (prefers-color-scheme: dark) {
-  .db-root,
-  .db-root * {
-    color-scheme: light !important;
-  }
-  .db-card,
-  .db-stat,
-  .db-nav {
-    background: inherit !important;
-  }
 }
